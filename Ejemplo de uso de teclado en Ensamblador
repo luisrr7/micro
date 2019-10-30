@@ -1,0 +1,142 @@
+.model small
+.stack
+.data           
+
+;directivas DefineByte 8bits
+msg1 db 10,13, 'INTRODUCCION A LOS MICROPROCESADORES $'
+msg2 db 10,13,'introducir cadena:$'
+msg3 db 10,13,'introducir caracter:$'	
+msg4 db 10,13,'Suma:$'
+msg5 db 10,13,'Resta:$'
+msg6 db 10,13,'Mult:$'
+msg0 db 10,13,'Ingresa un numero:$' 
+c1 db '$'	
+c2 db '$'	
+n1 db 0
+n2 db 0
+r db 0
+
+.code
+
+;asiganamos el segmento de datos al segmento de codigo
+mov ax,@data
+mov ds, ax 
+
+;desplegar mensaje
+mov ah,09h
+mov dx,offset msg1
+int 21h
+ 
+;09h Imprime el contenido de dx 
+;mensaje cadena
+mov ah,09h
+mov dx,offset msg2 
+int 21h
+
+;0AH captura una cadena de texto y lo guarda en dx
+;captura cadena
+mov ah,0ah
+mov dx,offset c1
+int 21h
+
+;mensaje caracter
+mov ah,09h
+mov dx,offset msg3
+int 21h
+
+;captura de caracter
+mov ah,01h
+int 21h
+
+	
+;mensaje ingresa un numero
+mov ah, 09h
+mov dx,offset msg0
+int 21h   
+
+;captura numero1
+mov ah,01h
+int 21h
+sub al, 30h
+mov n1,al
+
+;mensaje ingresa un numero
+mov ah, 09h
+mov dx,offset msg0
+int 21h
+
+;captura numero 2
+mov ah,01h
+int 21h
+sub al, 30h
+mov n2,al
+
+;Suma
+mov al, n1
+add al,n2
+mov r, al
+
+mov ah, 09h
+mov dx,offset msg4
+int 21h
+
+mov al,r
+AAM         ;ajuste ASCII para multiplicacion
+mov bx,ax
+mov ah,02h
+mov dl,bh
+add dl,30h
+int 21h
+
+mov ah,02h
+mov dl,bl
+add dl,30h
+int 21h	
+
+;Resta
+mov al,n1
+sub al,n2
+mov r,al
+
+mov ah, 09h
+mov dx,offset msg5
+int 21h
+
+mov al,r
+AAM
+mov bx,ax
+mov ah,02h
+mov dl,bh
+add dl,30h
+int 21h
+
+mov ah,02h
+mov dl,bl
+add dl,30h
+int 21h	
+
+;Mult
+mov al, n1
+mov bl, n2
+mul bl
+mov r,al
+
+mov ah, 09h
+mov dx,offset msg6
+int 21h
+
+mov al,r
+AAM
+mov bx,ax
+mov ah,02h
+mov dl,bh
+add dl,30h
+int 21h  
+
+mov ah,02h
+mov dl,bl
+add dl,30h
+int 21h	
+
+
+ret
