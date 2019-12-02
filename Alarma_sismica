@@ -1,0 +1,115 @@
+[code]
+
+// Sensor
+#define QUAKEALARM A0
+#define PIR1 A1
+#define PIR2 A2
+#include <LiquidCrystal.h>
+int RS       = 8;
+int E        = 9;
+int D4       = 10;
+int D5       = 11;
+int D6       = 12;
+int D7       = 13;
+
+LiquidCrystal lcd (RS, E, D4, D5, D6, D7);
+
+// Variable del sensor
+
+static int diferencia;
+
+int qaVal           = 0;
+int qaPreVal        = 0;
+int threshold       = 10;
+int contador        = 0;
+
+// Variables de los PIR
+int pirOn1          =2;
+int pirOn2          =3;
+int s1              =4;
+int s2              =5;
+int s3              =6;
+int s4              =7;
+int valpir1         =0;
+int valpir2         =0;
+
+
+void setup () {   
+
+  Serial.begin(57600);    //Con el monitor serial se esta calibrando el sensor para luego tener los valores requeridos
+  pinMode(QUAKEALARM, INPUT);
+  pinMode(PIR1, OUTPUT);
+  pinMode(PIR2,OUTPUT);
+  pinMode(pirOn1,INPUT);
+  pinMode(pirOn2,INPUT);
+  pinMode(s1,OUTPUT);
+  pinMode(s2,OUTPUT);
+  pinMode(s3,OUTPUT);
+  pinMode(s4,OUTPUT);
+
+  
+  lcd.begin(16, 2);
+  lcd.setCursor(0, 0);
+  lcd.print("ALARMA SISMICA");
+  
+  
+} 
+void loop () {
+
+  digitalWrite(s1,HIGH);
+  digitalWrite(s2,HIGH);
+  digitalWrite(s3,HIGH);
+  digitalWrite(s4,HIGH);
+
+  qaVal       = analogRead(QUAKEALARM);
+  diferencia  = qaPreVal - qaVal; 
+  valpir1     = digitalRead(pirOn1);
+  valpir2     = digitalRead(pirOn2);
+
+  if ((diferencia > 0) and (diferencia >= threshold)||(valpir1==HIGH)||(valpir2==HIGH)
+  ) {
+
+     //imprime la cantidad de activaciones
+
+     contador = contador + 1;
+     Serial.print("Sismo! ");
+     Serial.println(contador);
+     Serial.print("Iniciando secuencia");
+     Serial.print("  Voltaje=");
+     Serial.print(qaVal);
+     lcd.setCursor(0,1);
+     lcd.print("ALARMA ACTIVAwujm");
+     analogWrite(PIR1,1023);
+     analogWrite(PIR2,1023);
+     digitalWrite(s1,LOW);
+     delay(1000);
+     digitalWrite(s2,LOW);
+     delay(1000);
+     digitalWrite(s3,LOW);
+     delay(1000);
+     digitalWrite(s4,LOW);
+     delay(20000);
+     digitalWrite(s1,HIGH);
+     digitalWrite(s2,HIGH);
+     digitalWrite(s3,HIGH);
+     digitalWrite(s4,HIGH);
+     
+     
+     
+     }else{
+     lcd.setCursor(0,1);
+     lcd.print("DESARMADO       ");
+     digitalWrite(s1,HIGH); 
+     digitalWrite(s2,HIGH);
+     digitalWrite(s3,HIGH); 
+     digitalWrite(s4,HIGH); 
+     }
+  qaPreVal = qaVal; }
+
+  
+
+
+ 
+
+ 
+[/code]
